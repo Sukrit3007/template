@@ -125,7 +125,7 @@ export const siteMeta = {
   titleTemplate: "%s — Acme",
   description:
     "A scroll-driven marketing landing page template built with Next.js, Tailwind and Motion.",
-  url: "https://example.com",
+  url: "https://marketing-template-sooty.vercel.app",
   /** Alt text for the generated Open Graph image. */
   ogAlt: "Acme — Landing Page Template",
   locale: "en_US",

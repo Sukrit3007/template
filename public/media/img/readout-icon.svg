@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" role="img" aria-label="">
+  <!-- Small decorative glyph beside a hero readout label. Light, because it
+       sits over the dimmed hero video. Swap the path in content/landing.ts. -->
+  <g stroke="#F5F5F4" stroke-width="1.4" stroke-linecap="round">
+    <line x1="7" y1="1.5" x2="7" y2="12.5"/>
+    <line x1="2.24" y1="4.25" x2="11.76" y2="9.75"/>
+    <line x1="2.24" y1="9.75" x2="11.76" y2="4.25"/>
+  </g>
+</svg>

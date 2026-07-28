@@ -1,0 +1,299 @@
+@import "tailwindcss";
+@import "./grid.generated.css";
+@import "./type.generated.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   Design system
+   ---------------------------------------------------------------------------
+   The whole page is laid out in "design pixels". `--spacing: .0625rem` means a
+   numeric utility resolves to `n/16 rem`, and the root font-size is fluid, so
+   `pt-140` is literally 140px at the breakpoint's reference width and scales
+   with the viewport from there. Reference widths: 375 / 768 / 1440.
+
+   Every length below is therefore viewport-relative. `--sbw` is the scrollbar
+   width, measured on the client (see components/layout/scrollbar-width.tsx) and subtracted so the
+   grid stays aligned whether or not a classic scrollbar is present.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --spacing: 0.0625rem;
+
+  /* Neutral placeholder palette. Named by role, not by hue, so re-skinning is a
+     value change here rather than a rename across every component. */
+  --color-surface: #f5f5f4;
+  --color-surface-muted: #e6e6e3;
+  --color-line: #d2d2ce;
+  --color-ink: #141414;
+  --color-ink-soft: #57574f;
+  --color-ink-muted: #9a9a94;
+  --color-contrast: #2f2f2a;
+  --color-brand: #2e22e5;
+  /* The closing panel is a full field of the brand colour; its type is near-white.
+     White on `brand` is 8.48:1 — but `brand` on `ink` is only 2.17:1, so never
+     pair the two. */
+  --color-panel: #2e22e5;
+  --color-panel-ink: #f5f5f4;
+
+  --ease-quart-out: cubic-bezier(0.26, 1.04, 0.54, 1);
+  --ease-quart-inout: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-expo-out: cubic-bezier(0.16, 1.08, 0.38, 0.98);
+  --ease-expo-inout: cubic-bezier(0.9, 0, 0.1, 1);
+  --ease-cubic-inout: cubic-bezier(0.66, 0, 0.34, 1);
+
+  /* Role-based font tokens: `font-serif` for display headlines, `font-sans` for
+     body copy, `font-mono` for eyebrows and labels. Components only ever use
+     these three, so changing a family is a one-line edit in app/layout.tsx. */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
+
+  --animate-fade-in: fade-in 1s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+  /* Outward wave across components/media/dot-grid.tsx; each dot offsets this by
+     its distance from the centre. */
+  --animate-dot-pulse: dot-pulse 3.2s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes dot-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.9);
+    }
+  }
+
+  /* Blob drift in components/media/animated-backdrop.tsx. Runs `alternate`, so
+     the loop ping-pongs and there's no seam to match. Each blob supplies its own
+     --drift-* values, duration and (negative) delay. */
+  --animate-backdrop-drift: backdrop-drift 20s ease-in-out infinite alternate;
+
+  @keyframes backdrop-drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(var(--drift-x, 0), var(--drift-y, 0), 0)
+        scale(var(--drift-scale, 1));
+    }
+  }
+}
+
+:root {
+  --sbw: 0px;
+  --screen-width: calc(100vw - var(--sbw));
+  /* lvh/svh where supported; the plain vh fallbacks come first. */
+  --screen-height-min: 100vh;
+  --screen-height-max: 100vh;
+  --nav-height: 5.75rem;
+
+  /* shadcn semantic tokens, pointed at the page palette so its components
+     inherit these colours instead of shadcn's neutral defaults. Keep in step
+     with the @theme block above. */
+  --background: #f5f5f4;
+  --foreground: #141414;
+  --card: #f5f5f4;
+  --card-foreground: #141414;
+  --popover: #f5f5f4;
+  --popover-foreground: #141414;
+  --primary: #2e22e5;
+  --primary-foreground: #f5f5f4;
+  --secondary: #ebebe8;
+  --secondary-foreground: #141414;
+  --muted: #e6e6e3;
+  --muted-foreground: #9a9a94;
+  --accent: #e6e6e3;
+  --accent-foreground: #141414;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #d2d2ce;
+  --input: #d2d2ce;
+  --ring: #2e22e5;
+  --radius: 0.625rem;
+}
+
+@supports (height: 100svh) {
+  :root {
+    --screen-height-min: 100svh;
+    --screen-height-max: 100lvh;
+  }
+}
+
+/* Mobile — reference 375px, 12 columns */
+html {
+  --grid-width: calc(91.4667vw - var(--sbw) * 0.91467);
+  --margin: calc(4.26667vw - var(--sbw) * 0.04267);
+  --gutter: calc(2.66667vw - var(--sbw) * 0.02667);
+  --column: calc(5.17778vw - var(--sbw) * 0.05178);
+  font-size: min(calc(4.26667vw - var(--sbw) * 0.04267), 20.267px);
+}
+
+/* Tablet — reference 768px, 12 columns */
+@media (min-width: 48rem) {
+  html {
+    --grid-width: calc(94.7917vw - var(--sbw) * 0.94792);
+    --margin: calc(2.60417vw - var(--sbw) * 0.02604);
+    --gutter: calc(1.30208vw - var(--sbw) * 0.01302);
+    --column: calc(6.70573vw - var(--sbw) * 0.06706);
+    font-size: calc(2.08333vw - var(--sbw) * 0.02083);
+  }
+}
+
+/* Desktop — reference 1440px, 24 columns */
+@media (min-width: 64rem) {
+  :root {
+    --header-height: 5.875rem;
+    --nav-height: 5rem;
+  }
+
+  html {
+    --grid-width: calc(97.2222vw - var(--sbw) * 0.97222);
+    --margin: calc(1.38889vw - var(--sbw) * 0.01389);
+    --gutter: calc(1.38889vw - var(--sbw) * 0.01389);
+    --column: calc(2.71991vw - var(--sbw) * 0.0272);
+    font-size: min(calc(1.11111vw - var(--sbw) * 0.01111), 18.667px);
+  }
+}
+
+@layer base {
+  body {
+    /* Authored copy carries its own line breaks, authored in content/landing.ts. */
+    white-space: pre-wrap;
+    overscroll-behavior: none;
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Lenis drives scrolling; native smooth scrolling would fight it. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  /* Dots in components/media/dot-grid.tsx. Without `transform-box: fill-box` a
+     scale on an SVG shape is measured from the SVG's origin, not the shape's own
+     centre, so the dots would slide outward instead of growing in place. */
+  .animate-dot-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-dot-pulse,
+    .animate-backdrop-drift {
+      animation: none;
+    }
+  }
+}
+
+@utility grid-container {
+  width: var(--grid-width);
+  margin-inline: auto;
+  display: block;
+}
+
+@utility margin-p-1 {
+  padding: var(--margin);
+}
+
+@utility margin-px-1 {
+  padding-inline: var(--margin);
+}
+
+@utility clip-path-inset-0 {
+  clip-path: inset(0);
+}
+
+/* Gaps expressed in grid gutters rather than the spacing scale. */
+@utility gutter-gap-1 {
+  gap: var(--gutter);
+}
+
+@utility gutter-gap-2 {
+  gap: calc(2 * var(--gutter));
+}
+
+/* Mobile nav panel. Base UI publishes the measured height as
+   `--collapsible-panel-height`; transitioning to/from 0 on the
+   starting/ending style gives the panel its slide without a hard-coded height. */
+@utility nav-panel {
+  height: var(--collapsible-panel-height);
+  overflow: hidden;
+  transition: height 100ms ease-out;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    height: 0;
+  }
+}
+
+@theme inline {
+  /* NB: shadcn's init emits `--font-sans: var(--font-sans)` and a `--radius-*`
+     scale here. Both are removed on purpose:
+       - the font line is self-referential and clobbers the Geist mapping above;
+       - the radius remap would shift `rounded-md` from Tailwind's .375rem to
+         .5rem, and the markup depends on the stock scale. */
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+}

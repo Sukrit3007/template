@@ -26,8 +26,12 @@ export function SiteFooter() {
       </div>
 
       <div className="grid-container relative z-1 col-start-1 row-start-1 flex flex-col justify-center overflow-x-hidden text-surface max-lg:pt-96">
-        <div className="flex items-center justify-around max-lg:flex-col max-lg:gap-y-96 lg:mt-auto lg:flex-row">
-          <div className="span-w-8 lg:span-w-5 pt-10">
+        {/* The outer two take equal flexible width (`lg:flex-1`) so the link
+            column lands on true centre. `justify-around` can't do that — it
+            spaces around three items of different widths, which puts the middle
+            one off-centre by half their difference. */}
+        <div className="flex items-center justify-between max-lg:flex-col max-lg:gap-y-96 lg:mt-auto lg:flex-row">
+          <div className="span-w-8 lg:flex-1 pt-10">
             <Image
               src={siteFooter.logo}
               alt=""
@@ -52,7 +56,7 @@ export function SiteFooter() {
             ))}
           </ul>
 
-          <h2 className="font-medium text-35 lg:text-50">
+          <h2 className="font-medium text-35 lg:flex-1 lg:text-center lg:text-50">
             {siteFooter.tagline}
           </h2>
         </div>
